@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Hello React</title>
+    <script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <div id="hiContent"></div>
+    <div id="FriendContent"></div>
+    <div id="lifeCycle"></div>
+    <script type="text/jsx">
+    var TheFirst = React.createClass({ // 建立新的元件
+      getInitialState: function(){ // 定義預設狀態
+        return { // 回傳json格式狀態
+          userstate: 'Glenn'
+        }
+      },
+      handleChangeA: function(e){ //自訂事件名稱
+        this.setState({ // 設定狀態
+          userstate: e.target.value //從作用中物件取值
+        });
+      },
+      render: function(){ //畫出你想要的元件架構
+        return( // 元件開始
+          <div>
+            The First  {this.state.userstate}<br />
+            change state :
+            <input type="text" value={this.state.userstate} onChange={this.handleChangeA} />
+          </div>
+        ) // 元件結束
+      }
+    });
+
+    React.render(<TheFirst />, // 輸入剛剛宣告的元件名稱
+      content // 目標DOM
+    );
+
+    var HelloUser = React.createClass({
+      render: function(){
+        return ( // 透過this.props 抓取父層屬性
+          <div> Hi~ {this.props.name}！</div>
+        )
+      }
+    });
+
+    React.render(<HelloUser name="Glenn"/>, // 父層屬性(name)
+      hiContent // 目標DOM
+    );
+
+    var AddFriend = React.createClass({
+      // 這元件包含了input、button，用來增加新的朋友
+      getInitialState: function(){
+        return {
+          newFriend: ''
+        }
+      },
+      updateNewFriend: function(e){
+        //每次輸入更新值
+        this.setState({
+          newFriend: e.target.value
+        })
+      },
+      handleAddNew: function(){
+        // 按下button時，將資料更新到父層
+        this.props.addNew(this.state.newFriend);
+        this.setState({
+          newFriend: ''
+        })
+      },
+      render: function(){
+        return(
+          <div>
+            <input type="text" value={this.state.newFriend} onChange={this.updateNewFriend} />
+            <button onClick={this.handleAddNew}>Add new Friend</button>
+          </div>
+        )
+      }
+    });
+
+    var FriendList = React.createClass({
+      render: function(){
+        // 透過 this.props 讀取父層得值
+        var listItems = this.props.Friends.map(function(item){
+          console.log({item});
+          return <li>{item}</li>;
+        });
+        return (
+          <div>
+            <h2>朋友列表</h2>
+            <ul>
+              {listItems}
+            </ul>
+          </div>
+        )
+      }
+    });
+
+    var HelloMyFriend = React.createClass({
+      getInitialState: function(){
+        return {
+          allFriends: ['Jackli', 'Ken', 'Aron'] //要給內層用的陣列
+        }
+      },
+      addNewFriend: function(newFriend){
+        console.log(newFriend);
+        // 更新allFriends資料
+        this.state.allFriends.push(newFriend);
+        this.setState({
+          allFriends: this.state.allFriends
+        })
+      },
+      render: function(){
+        return (
+          // 模組子層addNew更新時，觸發addNewFriend
+          <div>
+            <h1>Hi~ {this.props.name}！你的朋友有下列：</h1>
+            <AddFriend addNew={this.addNewFriend} />
+            <FriendList Friends={this.state.allFriends} />
+          </div>
+        )
+      }
+    });
+
+    React.render(<HelloMyFriend name="Glenn"/>,
+      FriendContent);
+
+
+      var LifeCycle = React.createClass({
+        getInitialState: function(){
+          // 元件初始化
+          alert('getInitialState 的狀態');
+          return {
+            name: 'Glenn'
+          }
+        },
+        textClick: function(){
+          this.setState({
+            name: 'Jack'
+          })
+        },
+        componentWillMount: function(){
+          // 元件即將建立
+          alert('componentWillMount 的狀態');
+        },
+        componentDidMount: function(){
+          // 元件建立
+          alert('componentDidMount 的狀態');
+        },
+        componentWillReceiveProps: function(){
+          // 尚未測試出來
+          alert('componentWillReceiveProps 的狀態');
+        },
+        render: function(){
+          return(
+            <div onClick={this.textClick}>
+              test, {this.state.name} {this.props.name}
+            </div>
+          )
+        }
+      });
+
+      React.render(<LifeCycle name="Aron" />,
+        lifeCycle
+      );
+    </script>
+  </body>
+</html>

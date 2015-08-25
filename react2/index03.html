@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <meta charset="utf-8">
+	  <script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+      var mountnode = document.getElementById("content");
+      var Component = React.createClass({
+        render: function () {
+          console.log('render');
+          return (
+            <div>Hello {this.props.name}</div>
+
+          );
+        },
+        //在render之前執行，只會執行一次
+        componentWillMount :function(){
+          console.log('componentWillMount');
+        },
+        //載入後執行，並已經產生相對應的DOM，可以透過this.getDOMNode()取得。
+        //也有人會在這邊放上setTimeout，持續後續的DOM操作。
+        componentDidMount :function(){
+          console.log('componentDidMount');
+          this.inc = setInterval(this.update,500);
+        },
+        //當元件收到新的prop時，會被觸發。第一次初始化render時不會被執行（因為沒有舊資料可比對)。
+        componentWillReceiveProps :function(nextProps){
+          console.log('componentWillReceiveProps');
+        },
+        //不管是改變 this.props或 this.state 都會觸發 shouldComponentUpdate
+        //可以比較目前的props和將要改變的props的value 來決定要不要重新繪製，若要就回傳ture
+        shouldComponentUpdate :function(nextProps,nextState){
+          console.log('shouldComponentUpdate');
+          return nextProps.id !== this.props.id;
+        },
+        componentWillUpdate : function(nextProps,nextState){
+          console.log('componentWillUpdate');
+        },
+        componentDidUpdate : function(prevProps, prevState ){
+          console.log('componentDidUpdate');
+        },
+        //組件被消滅之前，用來清除一些設定
+        componentWillUnmount : function(){
+          console.log('componentWillUnmount');
+          clearInterval(this.inc)
+        }
+      });
+
+
+      var compo = React.render(<Component name="Glenn" />, mountnode);
+
+      compo.setProps({name:"Julia"});
+      compo.replaceProps({name:"Julia"});
+      var a = compo.getDOMNode();
+      console.log("a = " + a);
+      console.log(a);
+      //強制更新，無視shouldComponentUpdate();
+      compo.forceUpdate();
+      //檢查元件是否已經掛載
+      var b = compo.isMounted();
+      console.log("b = " + b);
+      //unmount
+
+      React.unmountComponentAtNode(mountnode);
+
+      //參考資料 http://ricostacruz.com/cheatsheets/react.html
+      // http://jamestw.logdown.com/posts/255887-reactjs-lifecycle
+    </script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+    <script src="/SCRIPT/marked.min.js"></script>
+    <script type="text/jsx"  src="tutorial1.js"></script>
+  </head>
+  <body>
+    <div id="HelloBox"></div>
+    <div id="mountNode"></div>
+    <div id="contenta"></div>
+    <script type="text/jsx">
+		 var HelloMessages = React.createClass({
+		  render: function() {
+			return <div>Hello {this.props.name} !</div>;
+		  }
+		});
+		React.render(<HelloMessages name="Glenn" />, HelloBox);	//Hello
+		React.render(<HelloMessage name="Aron" />, HelloBox);//Hello
+		 React.render(
+			 <NotesList notepad={notepad}/>,
+			 contenta
+		 );		
+		 React.render(<TodoApp />, mountNode);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <meta charset="utf-8">
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+    <script src="/SCRIPT/marked.min.js"></script>
+    <script src="menu1.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"></script>
+    <style media="screen">
+    .myImgNext{
+      width: 10pt;
+      vertical-align: initial;
+      float: right;
+    }
+    .myLabel{
+      color:red;
+    }
+    .mySpan{
+      color:blue;
+    }
+    .MenuSub {
+      width: 100pt;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <div id="contentListT"></div>
+    <div id="contentList"></div>
+    <div id="divList"></div>
+    <script type="text/jsx">
+    var DataList = [{"LVL_CD":"1","MENU_ID":"3","MENU_CNM":"環島聯管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"8","MENU_CNM":"OCR 管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"A","MENU_CNM":"基本資料","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"B","MENU_CNM":"訂單管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"C","MENU_CNM":"商品管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"D","MENU_CNM":"團銷管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"E","MENU_CNM":"票務管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"F","MENU_CNM":"證照管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"G","MENU_CNM":"網站管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"H","MENU_CNM":"系統設定","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"I","MENU_CNM":"國旅團務管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"J","MENU_CNM":"入境團務管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"K","MENU_CNM":"帳務管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"L","MENU_CNM":"訂房中心","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"M","MENU_CNM":"操作手冊","PMENU_ID":"","asp_enm":"L_manual.asp"},{"LVL_CD":"1","MENU_ID":"N","MENU_CNM":"訊息管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"P","MENU_CNM":"商品發布管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"R","MENU_CNM":"團體佣金結算","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"T","MENU_CNM":"航空客運管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"U","MENU_CNM":"航空貨運管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"V","MENU_CNM":"電子報管理","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"W","MENU_CNM":"S&N","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"X","MENU_CNM":"TRAVEL.NET","PMENU_ID":"","asp_enm":""},{"LVL_CD":"1","MENU_ID":"Z","MENU_CNM":"系統維護","PMENU_ID":"","asp_enm":""}];
+    var MyLabel = React.createClass({
+      render:function() {
+  		    return <label className="myLabel">{this.props.textlabel}. </label>;
+  	  }
+    });
+    var MySpan = React.createClass({
+      render:function() {
+        if (this.props.url==""){
+  		    return <span className="mySpan">{this.props.textspan}</span>;
+    	  }else {
+          var url = "/"+this.props.path+"/"+this.props.url;
+  		    return <a href={url} target="_blank"><span className="mySpan">{this.props.textspan}</span></a>;
+    	  }
+      }
+    });
+    var MyImgNext = React.createClass({
+      render:function() {
+  		    return <img className="myImgNext" src="next.png" alt="next" />;
+  	  }
+    });
+
+    var MenuSubT = React.createClass({
+      render: function() {
+        return (
+          <div className="MenuSub">
+            <MyLabel textlabel="3" />
+            <MySpan textspan="島聯管理"/>
+            <MyImgNext />
+          </div>
+        );
+      }
+    });
+    React.render(<MenuSubT  />,content);
+
+
+    var MenuListT = React.createClass({
+      render:function(){
+        return(
+          <ul>
+            <li>
+              <MenuSubT />
+            </li>
+          </ul>
+        );
+      }
+    });
+    React.render(<MenuListT  />,contentListT);
+
+
+    var MenuSub = React.createClass({
+      render: function() {
+        var data = this.props.data;
+        var img ;
+        if (data.asp_enm==""){
+          img = ( <MyImgNext />  );
+        }
+        return (
+          <div className="MenuSub">
+            <MyLabel textlabel={data.MENU_ID} />
+            <MySpan textspan={data.MENU_CNM} url={data.asp_enm} path={data.MENU_ID}/>
+            { img}
+          </div>
+        );
+      }
+    });
+    var LiItem =  React.createClass({
+      render:function(){
+          return (<li id={this.props.data.MENU_ID}><MenuSub data={this.props.data}/></li>);
+      }
+    });
+    var UlList = React.createClass({
+      render:function(){
+        return(
+          <ul className="ulList">
+            {this.props.data.map( function ( result )  { 
+           return  <LiItem  key={result.MENU_ID}  data={result} /> ; 
+            })}
+          </ul>
+        );
+      }
+    });
+    React.render(<UlList data={DataList} />,contentList);
+
+    var DivItem =  React.createClass({
+      render:function(){
+          return (<div className="DivItem" id={this.props.data.MENU_ID}><MenuSub data={this.props.data}/></div>);
+      }
+    });
+    var DivList = React.createClass({
+      //設定State裡的物件形態
+      getInitialState: function() {
+          return {data:[]};
+      },
+      //在render之前執行，只會執行一次
+      componentWillMount :function(){
+        this.setState({
+          data: DataList
+        })
+      },
+      render:function(){
+        return(
+          <div className="divList">
+            {this.state.data.map( function ( result )  { 
+           return  <DivItem  key={result.MENU_ID}  data={result} /> ; 
+            })}
+          </div>
+        );
+      }
+    });
+    React.render(<DivList data={DataList} />,divList);
+    </script>
+  </body>
+</html>

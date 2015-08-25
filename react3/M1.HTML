@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <meta charset="utf-8">
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+    <style media="screen">
+    .myImgNext{
+      width: 10pt;
+      vertical-align: initial;
+      float: right;
+    }
+    .myLabel{
+      color:red;
+    }
+    .mySpan{
+      color:blue;
+    }
+    .MenuSub {
+      width: 100pt;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+    var DataList = [{"MENU_NO":"3","MENU_NM":"環島聯管理","URL":""},{"MENU_NO":"8","MENU_NM":"OCR 管理","URL":""},{"MENU_NO":"A","MENU_NM":"基本資料","URL":""},{"MENU_NO":"B","MENU_NM":"訂單管理","URL":""},{"MENU_NO":"C","MENU_NM":"商品管理","URL":""},{"MENU_NO":"D","MENU_NM":"團銷管理","URL":""},{"MENU_NO":"E","MENU_NM":"票務管理","URL":""},{"MENU_NO":"F","MENU_NM":"證照管理","URL":""},{"MENU_NO":"G","MENU_NM":"網站管理","URL":""},{"MENU_NO":"H","MENU_NM":"系統設定","URL":""},{"MENU_NO":"I","MENU_NM":"國旅團務管理","URL":""},{"MENU_NO":"J","MENU_NM":"入境團務管理","URL":""},{"MENU_NO":"K","MENU_NM":"帳務管理","URL":""},{"MENU_NO":"L","MENU_NM":"訂房中心","URL":""},{"MENU_NO":"M","MENU_NM":"操作手冊","URL":"L_manual.asp"},{"MENU_NO":"N","MENU_NM":"訊息管理","URL":""},{"MENU_NO":"P","MENU_NM":"商品發布管理","URL":""},{"MENU_NO":"R","MENU_NM":"團體佣金結算","URL":""},{"MENU_NO":"T","MENU_NM":"航空客運管理","URL":""},{"MENU_NO":"U","MENU_NM":"航空貨運管理","URL":""},{"MENU_NO":"V","MENU_NM":"電子報管理","URL":""},{"MENU_NO":"W","MENU_NM":"S&N","URL":""},{"MENU_NO":"X","MENU_NM":"TRAVEL.NET","URL":""},{"MENU_NO":"Z","MENU_NM":"系統維護","URL":""}];
+    var MySpanRed = React.createClass({
+      render:function() {
+          return ( <span className="myLabel"> {this.props.text}.</span>);
+      }
+    });
+    var MySpanBlue = React.createClass({
+      render:function() {
+          return ( <span className="mySpan"> {this.props.text}</span>);
+      }
+    });
+    var MyImg = React.createClass({
+      render:function() {
+          return ( <img className="myImgNext" src="next.png" alt="" />);
+      }
+    });
+    var MyGroup = React.createClass({
+
+      render:function() {
+        var url = this.props.URL;
+        var img
+        if (url ==""){
+          img = (<MyImg />);
+        }
+          return (
+            <div className="MenuSub">
+              <MySpanRed text={this.props.MENU_NO}/>
+              <MySpanBlue text={this.props.MENU_NM} url={url}/>
+              {img}
+            </div>
+          );
+      }
+    });
+    var MyLi = React.createClass({
+      render:function() {
+          return ( <li><MyGroup MENU_NO={this.props.data.MENU_NO}
+            MENU_NM={this.props.data.MENU_NM} URL={this.props.data.URL}/></li>);
+      }
+    });
+    // var dataJson = [{"MENU_NO":"3","MENU_NM":"環島聯管理","URL":""}];
+    var MyUl = React.createClass({
+      render:function() {
+          return (
+            <ul>
+                {
+                  this.props.data.map( function ( result )  {
+                      return  <MyLi   data={result} /> ;
+                    })
+                }
+            </ul>
+          );
+      }
+    });
+
+
+    React.render(<MyUl  data={DataList}/>,content);
+    </script>
+  </body>
+</html>

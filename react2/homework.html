@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+
+    var TodoTable = React.createClass({
+      render: function() {
+      var createItem = function(itemText, index) {
+        return <tr key={index + itemText}><td>{itemText}</td></tr>;
+      };
+      return (
+        <table>
+          {this.props.items.map(createItem)}
+        </table>
+        );
+      }
+    });
+		var TodoApp = React.createClass({
+      // getInitialState()在元件的生命週期中僅執行一次，設置組件的初始化狀態。
+		  getInitialState: function() {
+			     return {items: ["123", "123", "123", "123"], text: '123'};
+		  },
+		  onChange: function(e) {
+        // console.log("text:"+this.state.text);
+			     this.setState({text: e.target.value});
+            //  console.log("1text:"+this.state.text);
+		  },
+		  handleSubmit: function(e) {
+  			e.preventDefault();
+  			var nextItems = this.state.items.concat([this.state.text]);
+  			var nextText = '';
+        console.log(this.state.items);
+        if (this.state.text != "")this.setState({items: nextItems, text: nextText});
+		  },
+		  render: function() {
+  			return (
+  			  <div>
+  				<h3>TODO</h3>
+  				<TodoTable items={this.state.items} />
+  				<form onSubmit={this.handleSubmit}>
+  				  <input onChange={this.onChange} value={this.state.text} />
+  				  <button>{'Add #' + (this.state.items.length + 1)}</button>
+  				</form>
+  			  </div>
+  			);
+		  }
+		});
+    React.render(<TodoApp />, content);
+    </script>
+  </body>
+</html>

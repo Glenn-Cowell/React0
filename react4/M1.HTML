@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <meta charset="utf-8">
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+    <style media="screen">
+    .myImgNext{
+      width: 10pt;
+      vertical-align: initial;
+      float: right;
+    }
+    .myLabel{
+      color:red;
+    }
+    .mySpan{
+      color:blue;
+    }
+    .MenuSub {
+      width: 150pt;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+    var DataList = [{"MENU_NO":"3","MENU_NM":"環島聯管理","URL":""},{"MENU_NO":"8","MENU_NM":"OCR 管理","URL":""},{"MENU_NO":"A","MENU_NM":"基本資料","URL":""},{"MENU_NO":"B","MENU_NM":"訂單管理","URL":""},{"MENU_NO":"C","MENU_NM":"商品管理","URL":""},{"MENU_NO":"D","MENU_NM":"團銷管理","URL":""},{"MENU_NO":"E","MENU_NM":"票務管理","URL":""},{"MENU_NO":"F","MENU_NM":"證照管理","URL":""},{"MENU_NO":"G","MENU_NM":"網站管理","URL":""},{"MENU_NO":"H","MENU_NM":"系統設定","URL":""},{"MENU_NO":"I","MENU_NM":"國旅團務管理","URL":""},{"MENU_NO":"J","MENU_NM":"入境團務管理","URL":""},{"MENU_NO":"K","MENU_NM":"帳務管理","URL":""},{"MENU_NO":"L","MENU_NM":"訂房中心","URL":""},{"MENU_NO":"M","MENU_NM":"操作手冊","URL":"L_manual.asp"},{"MENU_NO":"N","MENU_NM":"訊息管理","URL":""},{"MENU_NO":"P","MENU_NM":"商品發布管理","URL":""},{"MENU_NO":"R","MENU_NM":"團體佣金結算","URL":""},{"MENU_NO":"T","MENU_NM":"航空客運管理","URL":""},{"MENU_NO":"U","MENU_NM":"航空貨運管理","URL":""},{"MENU_NO":"V","MENU_NM":"電子報管理","URL":""},{"MENU_NO":"W","MENU_NM":"S&N","URL":""},{"MENU_NO":"X","MENU_NM":"TRAVEL.NET","URL":""},{"MENU_NO":"Z","MENU_NM":"系統維護","URL":""}];
+    var MySpanRed = React.createClass({
+      render:function() {
+          return ( <span className="myLabel"> {this.props.text}.</span>);
+      }
+    });
+    var MySpanBlue = React.createClass({
+      render:function() {
+          return ( <span className="mySpan"> {this.props.text}</span>);
+      }
+    });
+    var MyImg = React.createClass({
+      render:function() {
+          return ( <img className="myImgNext" src="next.png" alt="" />);
+      }
+    });
+    var MyGroupA = React.createClass({
+      render:function() {
+        var url = this.props.url;
+        url = "/"+this.props.MENU_NO + "/"+url;
+        return (
+          <a href={url} >
+            <MySpanRed text={this.props.MENU_NO} />
+            <MySpanBlue text={this.props.MENU_NM} />
+          </a>
+        )
+      }
+    })
+    var MyGroupB = React.createClass({
+      render:function() {
+        return (
+          <div>
+            <nobr>
+            <MySpanRed text={this.props.MENU_NO} />
+            <MySpanBlue text={this.props.MENU_NM} />
+            <MyImg />
+            </nobr>
+          </div>
+          )
+      }
+    })
+    var MyGroup = React.createClass({
+      showli: function() {
+        // $("ul>li>div>ul:not(#"+this.props.data.MENU_NO+">div>ul)").hide()
+        var obj = $("#"+this.props.MENU_NO+"")
+        if (obj.is(":visible")){
+          // obj.hide()
+        }else {
+          obj.show()
+        }
+      },
+      render:function() {
+        var url = this.props.URL;
+        var img
+        var text
+        var ulblock
+        if (url ==""){
+          var urltext = "menu1.asp?MENU_ID="+this.props.MENU_NO
+          text = (<MyGroupB MENU_NO ={this.props.MENU_NO} MENU_NM={this.props.MENU_NM} />)
+          ulblock = (<MyUl url={urltext} display="none"  PMENU_NO={this.props.MENU_NO}/>)
+        }else {
+          text = (<MyGroupA MENU_NO ={this.props.MENU_NO} MENU_NM={this.props.MENU_NM} url={url} />)
+        }
+
+          return (
+            <div className="MenuSub"  onClick={this.showli}>
+              {text}
+              {ulblock}
+            </div>
+          );
+      }
+    });
+    var MyLi = React.createClass({
+      render:function() {
+        // console.log(this.props.data);
+          return ( <li><MyGroup MENU_NO={this.props.data.MENU_NO}
+            MENU_NM={this.props.data.MENU_NM} URL={this.props.data.url}/></li>);
+      }
+    });
+    // getInitialState
+    // componentWillMount
+    var MyUl = React.createClass({
+      getdata:function(){
+        $.ajax({
+          url: this.props.url,
+          dataType: 'json',
+          success: function (data) {
+            this.setState({uldata: data});
+          }.bind(this),
+          error: function (xhr, status, err) {
+            // console.log(xhr.responseText);
+            // console.log(xhr);
+            console.error(this.props.url, status, err.toString());
+          }.bind(this)
+        });
+      },
+      getInitialState:function(){
+        return{uldata:[]}
+      },
+      componentWillMount:function(){
+        // this.setState({uldata: DataList});
+        this.getdata();
+        // setInterval(this.getdata, 5000)
+      },
+      componentDidMount:function(){
+      },
+      render:function() {
+        var display = this.props.display
+          return (
+            <ul style={{display}} id={this.props.PMENU_NO}>
+                {
+                  this.state.uldata.map( function ( result )  {
+                      return  <MyLi   data={result} /> ;
+                    })
+                }
+            </ul>
+          );
+      }
+    });
+    React.render(<MyUl url="menu1.asp" />,content);
+    </script>
+  </body>
+</html>

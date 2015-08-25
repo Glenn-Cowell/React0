@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+    var ListUL = React.createClass({
+      render:function(){
+        var liITem = function(){
+          return <li>111</li>
+        }
+        return (<ul>
+            {liITem}
+          </ul>)
+      }
+    });
+    var TodoTable = React.createClass({
+      render: function() {
+      var createItem = function(itemText, index) {
+        return <li key={index + itemText}>{itemText}</li>;
+      };
+      return (
+        <ul>
+          {this.props.items.map(createItem)}
+        </ul>
+        );
+      }
+    });
+    //this.state
+		var TodoApp = React.createClass({
+      // getInitialState()在元件的生命週期中僅執行一次，設置組件的初始化狀態。
+		  getInitialState: function() {
+			     return {items: ["123", "456", "789", "147"], text: '000'};
+		  },
+		  onChange: function(e) {
+        // console.log("text:"+this.state.text);
+			     this.setState({text: e.target.value});
+            //  console.log("1text:"+this.state.text);
+		  },
+		  handleSubmit: function(e) {
+  			e.preventDefault();
+  			var nextItems = this.state.items.concat([this.state.text]);
+  			var nextText = '';
+        console.log(this.state.items);
+        if (this.state.text != "")this.setState({items: nextItems, text: nextText});
+		  },
+		  render: function() {
+  			return (
+  			  <div>
+  				<h3>TODO</h3>
+  				<TodoTable items={this.state.items} />
+  				<form onSubmit={this.handleSubmit}>
+  				  <input onChange={this.onChange} value={this.state.text} />
+  				  <button>{'Add #' + (this.state.items.length + 1)}</button>
+  				</form>
+  			  </div>
+  			);
+		  }
+		});
+    React.render(<TodoApp />, content);
+    //React.render(<ListUL />, content);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello React</title>
+    <meta charset="utf-8">
+	<script src="/SCRIPT/react.js"></script>
+    <script src="/SCRIPT/JSXTransformer.js"></script>
+    <script src="/SCRIPT/jquery.js"></script>
+    <style media="screen">
+    .gbTime{
+      text-align: right;
+      color: red;
+    }
+    .gbName{
+      text-align: left;
+    }
+    .gbCntent{
+      width: 500px;
+      padding-left: 40px;
+      color: blue;
+    }
+    .gbBlock{
+      width: 550px;
+      border-radius: 25px;
+      border: 2px solid #8AC007;
+      padding: 20px;
+      margin-bottom: 5px;
+    }
+    .addGb{
+      width: 550px;
+      border-radius: 25px;
+      border: 2px solid #666666;
+      padding: 20px;
+      margin-bottom: 5px;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/jsx">
+    /** @jsx React.DOM */
+    var GbName = React.createClass({
+      render:function(){
+        return <span className="gbName">{this.props.name}</span>;
+      }
+    });
+    var GbCntent = React.createClass({
+      render:function(){
+        return <div className="gbCntent">{this.props.cntent}</div>;
+      }
+    });
+    var GbTime = React.createClass({
+      render:function(){
+        return <div className="gbTime">{this.props.time}</div>;
+      }
+    });
+    var GbBlock = React.createClass({
+      getInitialState: function(){ // 定義預設狀態
+        return { // 回傳json格式狀態
+          name: "",  cntent: "",  time: ""
+        }
+      },
+      //在render之前執行，只會執行一次
+      componentWillMount :function(){
+        // console.log(this.props.gbData.name);
+        this.setState({
+            // name: "Glenn",  cntent: "test",  time: "2015/06/26 17:0"
+
+            name: this.props.gbData.name,
+            cntent: this.props.gbData.cntent,
+            time: this.props.gbData.time
+        })
+      },
+      render:function(){
+        return (
+          <div className="gbBlock">
+            <GbName name={this.state.name}  />
+            <GbCntent cntent={this.state.cntent}  />
+            <GbTime time={this.state.time}  />
+          </div>
+        );
+      }
+    });
+
+    var AddGb = React.createClass({
+      // 這元件包含了input、button，用來增加新的朋友
+      getInitialState: function(){
+        return {
+          newname:"",newcntent:""
+        }
+      },
+      updateNewGbName: function(e){
+        //每次輸入更新值
+        this.setState({
+          newname: e.target.value
+        })
+      },
+      updateNewGbCntent: function(e){
+        //每次輸入更新值
+        this.setState({
+          newcntent: e.target.value
+        })
+      },
+      handleAddNew: function(){
+        // 按下button時，將資料更新到父層
+        d = new Date();
+        // console.log( this.refs.newname.getDOMNode().value);
+        // console.log( this.refs.newcntent.getDOMNode().value);
+        this.props.addNew({name:this.state.newname, cntent:this.state.newcntent,time:d.toLocaleString()});
+        this.setState({
+            newname: "",  newcntent: ""
+        })
+        // this.refs.newcntent.getDOMNode().value = ""
+      },
+      render: function(){
+        return(
+          <div className="addGb">
+            <label for="newname">姓名</label>
+            <input type="text" ref="newname" id="newname"  value={this.state.newname} onChange={this.updateNewGbName} />
+            <div class="">
+              <label for="newcntent">留言</label>
+              <textarea name="newcntent" ref="newcntent"  id="newcntent"  rows="8" cols="40" onChange={this.updateNewGbCntent} value={this.state.newcntent} />
+            </div>
+            <button onClick={this.handleAddNew}>Add new Gb</button>
+          </div>
+        )
+      }
+    });
+
+    var GbList = React.createClass({
+      getGbListData: function(){
+        $.ajax({
+          url: this.props.geturl,
+          dataType: 'json',
+          success: function (data) {
+            this.setState({gbListData: data});
+          }.bind(this),
+          error: function (xhr, status, err) {
+            // console.log(xhr.responseText);
+            // console.log(xhr);
+            console.error(this.props.url, status, err.toString());
+          }.bind(this)
+        });
+      },
+      setGbData: function(data){
+        $.ajax({
+            url: this.props.seturl,
+            type: 'POST',
+            data: {
+              name:data.name,
+              cntent:data.cntent,
+              time:data.time
+            },
+            dataType: 'json',
+            mimeType: 'textPlain',
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function (xhr, status, err) {
+              // console.log(xhr.responseText);
+              // console.log(xhr);
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+      },
+      addNewGb: function(tmpdata){
+        // console.log(tmpdata);
+
+
+        // 更新gbListData資料
+        this.state.gbListData.push(tmpdata);
+        this.setGbData(tmpdata)
+        this.setState({
+          gbListData: this.state.gbListData
+        })
+      },
+      getInitialState: function(){ // 定義預設狀態
+        return { // 回傳json格式狀態
+          gbListData: [],
+        }
+      },
+      //在render之前執行，只會執行一次
+      componentWillMount :function(){
+        this.getGbListData()
+        // this.setState({
+        //   gbListData: [{"name":"Glenn","cntent":"test","time":"2015/06/26 17:00"}]
+        // })
+      },
+      componentDidMount :function(){
+        this.inc = setInterval(this.getGbListData,5000);
+      },
+      //組件被消滅之前，用來清除一些設定
+      componentWillUnmount : function(){
+        clearInterval(this.inc)
+      },
+      render:function(){
+        return (
+          <div className="gbList">
+            {
+              this.state.gbListData.map( function ( gbData )  {
+                return  <GbBlock   gbData={gbData} /> ;
+              })
+            }
+            <AddGb addNew={this.addNewGb}  />
+          </div>
+        );
+      }
+    });
+    React.render(<GbList geturl="gb.asp" seturl="gb.asp"/>,content);
+    </script>
+    <!-- <div class="gbBlock">
+      <span class="gbName">name</span>
+      <div class="gbCntent">
+        留言
+      </div>
+      <div class="gbTime">2015/06/22 17:30:33</div>
+    </div> -->
+  </body>
+</html>
